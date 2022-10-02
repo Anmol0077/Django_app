@@ -38,7 +38,29 @@ class JoinTableApi(viewsets.ModelViewSet):
 
 def get_id(request,id=None):
     message = f'You submitted ID {id}' 
-    # for p in JoinTableModel.objects.raw('Select mf_id from funds_mutualfunds'):
-        # print(p.mf_id)
-        return HttpResponse(p.mf_id)
-   
+    fetched_id = id
+    print(fetched_id[0:2])
+    thislist = []
+    str1 = ""
+    if fetched_id[0:2] == 'MF':
+        print("hello")
+        queryset = JoinTableModel.objects.raw("Select funds_matchingfield.id,funds_mutualfunds.mf_name, funds_mutualfunds.mf_id as mf_id,funds_companiesname.cp_name,funds_companiesname.cp_id from funds_matchingfield JOIN funds_mutualfunds on funds_mutualfunds.mf_id = funds_matchingfield.mf_id JOIN funds_companiesname on funds_companiesname.cp_id = funds_matchingfield.cp_id where funds_matchingfield.mf_id = %s",[id])
+        print(queryset)
+        for p in queryset:
+            # print(p.cp_name)
+             thislist.append(p.cp_name)
+            # return HttpResponse(p.cp_name)
+        for i in thislist:
+            str1 += i
+            print(str1)    
+    elif fetched_id[0:2] == 'CP':
+        print("hello CP")
+        queryset = JoinTableModel.objects.raw("Select funds_matchingfield.id,funds_mutualfunds.mf_name, funds_mutualfunds.mf_id as mf_id,funds_companiesname.cp_name,funds_companiesname.cp_id from funds_matchingfield JOIN funds_mutualfunds on funds_mutualfunds.mf_id = funds_matchingfield.mf_id JOIN funds_companiesname on funds_companiesname.cp_id = funds_matchingfield.cp_id where funds_matchingfield.cp_id = %s",[id])
+        for p in queryset:
+            # print(p.mf_name)
+            thislist.append(p.mf_name)
+            # return HttpResponse(p.mf_name)   
+        for i in thislist:
+            str1 += i
+            print(str1)
+    return HttpResponse(str1 +" ")
